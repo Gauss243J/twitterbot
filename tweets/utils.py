@@ -24,9 +24,21 @@ def get_tweets_from_user(username, count=6):
 def modify_tweet_text(tweet):
     return tweet['text'] + " #SourceX"
 
+# Function to check if the tweet text already exists in your timeline
+def check_existing_tweet(client, modified_text):
+    try:
+        # Fetch your recent tweets (you can change the max_results to control how many tweets to check)
+        user_tweets = client.get_users_tweets(id=settings.TWITTER_USER_ID, max_results=10)
+        for tweet in user_tweets.data:
+            if tweet['text'] == modified_text:
+                return True
+        return False
+    except Exception as e:
+        print(f"Error while checking existing tweets: {e}")
+        return False
+
 # Function to retweet a modified tweet
 def retweet_with_modifications(tweet):
-    # Set up the tweepy client again for posting a tweet
     client = tweepy.Client(
         bearer_token=settings.TWITTER_BEARER_TOKEN,
         consumer_key=settings.TWITTER_API_KEY,
@@ -36,9 +48,20 @@ def retweet_with_modifications(tweet):
         wait_on_rate_limit=True
     )
 
-
     # Modify the tweet text
     modified_text = modify_tweet_text(tweet)
 
+    # Check if the tweet already exists
+    if check_existing_tweet(client, modified_text):
+        print("Tweet already exists. Skipping.")
+        return  # Skip posting the tweet if it already exists
+
     # Post the modified tweet using API v2's create_tweet method
-    client.create_tweet(text=modified_text)
+    try:
+        client.create_tweet(text=modified_text)
+        print(f"Tweet posted: {modified_text}")
+    except tweepy.TooManyRequests as e:
+        print(f"Rate limit exceeded. Sleeping for {e.retry_after} seconds.")
+        time.sleep(e.retry_after)
+    except Exception as e:
+        print(f"Error posting tweet: {e}")
