@@ -4,11 +4,7 @@ from django.conf import settings
 # Function to fetch tweets from a user using Twitter API v2
 def get_tweets_from_user(username, count=6):
     # Set up the tweepy client with Bearer Token for API v2
-    print(settings.TWITTER_BEARER_TOKEN)
-    print(settings.TWITTER_API_KEY)
-    print(settings.TWITTER_API_SECRET_KEY)
-    print(settings.TWITTER_ACCESS_TOKEN)
-    print(settings.TWITTER_ACCESS_TOKEN_SECRET)
+
     client = tweepy.Client(
         bearer_token=settings.TWITTER_BEARER_TOKEN,
         wait_on_rate_limit=True  # This enables automatic waiting for rate limits
