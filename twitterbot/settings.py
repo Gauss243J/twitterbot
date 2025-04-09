@@ -28,7 +28,14 @@ SECRET_KEY = 'django-insecure-9u@!#yj&_tt6z=&c4r)lo6dqc4(lng+5$90_q3wl&*qy3kz5k$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['twitterbot-jk9g.onrender.com']
+
+
+CORS_ALLOW_ALL_ORIGINS = True  # Permet toutes les origines (à utiliser uniquement en développement)
+CSRF_TRUSTED_ORIGINS = [
+    'https://twitterbot-jk9g.onrender.com',
+]
 
 
 # Application definition
