@@ -1,0 +1,7 @@
+# .gitignore
+.env
+
+# Environnements virtuels
+ven-bp/
+menv/
+env/
