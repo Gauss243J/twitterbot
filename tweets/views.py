@@ -14,7 +14,7 @@ def process_tweets(request):
         # Sort the tweets by created_at (oldest to newest)
         sorted_tweets = sorted(tweets, key=lambda t: t.created_at)
 
-        for tweet in sorted_tweets:
+        for tweet in sorted_tweets[:2]:
             # Retweet each tweet with modifications
             retweet_with_modifications(tweet, users)
 
