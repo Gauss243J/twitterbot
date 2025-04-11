@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .utils import get_tweets_from_user, retweet_with_modifications
+from .utils import get_tweets_from_user, retweet_with_modifications, get_own_recent_tweet_texts
 
 # Vue pour traiter les tweets
 def process_tweets(request):
