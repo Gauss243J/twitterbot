@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tweets',
+    'django_cron',
 ]
 
 MIDDLEWARE = [
