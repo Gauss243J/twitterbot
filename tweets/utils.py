@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Function to fetch tweets from a user using Twitter API v2
-def get_tweets_from_user(username, count=2, retries=3):
+def get_tweets_from_user(username, count=5, retries=3):
     client = tweepy.Client(
         bearer_token=settings.TWITTER_BEARER_TOKEN,
         wait_on_rate_limit=True
