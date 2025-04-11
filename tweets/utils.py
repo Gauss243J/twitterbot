@@ -18,14 +18,30 @@ def get_tweets_from_user(username, count=6):
     if not user:
         return []
 
-    # Fetch the recent tweets from the user
-    tweets = client.get_users_tweets(id=user.data['id'], max_results=count)
-    print(tweets)
-    return tweets.data if tweets.data else []
+    # Fetch tweets including author info
+    tweets_response = client.get_users_tweets(
+        id=user.data['id'],
+        max_results=count,
+        expansions=['author_id'],
+        user_fields=['username']
+    )
+
+    if not tweets_response.data:
+        return []
+
+    # Create a dictionary to map author_id to username
+    users = {u.id: u for u in tweets_response.includes['users']}
+    
+    # Return both tweets and users
+    return tweets_response.data, users
 
 # Function to modify the tweet text before reposting
-def modify_tweet_text(tweet):
-    return tweet['text'] + " #SourceX"
+def modify_tweet_text(tweet, users):
+    author = users.get(tweet.author_id)
+    if author:
+        return f"{tweet.text} @{author.username}"
+    else:
+        return f"{tweet.text} #SourceX"
 
 # Function to check if the tweet text already exists in your timeline
 def check_existing_tweet(client, modified_text):
