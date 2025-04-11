@@ -4,37 +4,47 @@ import requests
 from urllib3.exceptions import ProtocolError
 from django.conf import settings
 
-# Function to fetch tweets from a user using Twitter API v2
-def get_tweets_from_user(username, count=6):
-    # Set up the tweepy client with Bearer Token for API v2
+import random
+
+def get_tweets_from_user(username, count=6, retries=3):
     client = tweepy.Client(
         bearer_token=settings.TWITTER_BEARER_TOKEN,
-        wait_on_rate_limit=True  # This enables automatic waiting for rate limits
+        wait_on_rate_limit=True
     )
 
-    # Get the user ID (necessary for fetching tweets using API v2)
-    user = client.get_user(username=username)
-    if not user:
+    try:
+        user = client.get_user(username=username)
+    except Exception as e:
+        print(f"Error fetching user: {e}")
         return []
 
-    # Fetch tweets including author info
-    tweets_response = client.get_users_tweets(
-        id=user.data['id'],
-        max_results=count,
-        expansions=['author_id'],
-        user_fields=['username'],
-        tweet_fields=['created_at'],  # Specify created_at to be included in the response
-        exclude='replies', 
-    )
-
-    if not tweets_response.data:
+    if not user or not user.data:
         return []
 
-    # Return both tweets and users in a format that supports sorting by created_at
-    tweets = tweets_response.data
-    users = {u.id: u for u in tweets_response.includes['users']}
-    
-    return tweets, users
+    for attempt in range(retries):
+        try:
+            tweets_response = client.get_users_tweets(
+                id=user.data['id'],
+                max_results=count,
+                expansions=['author_id'],
+                user_fields=['username'],
+                tweet_fields=['created_at'],
+                exclude='replies',
+            )
+            if tweets_response.data:
+                tweets = tweets_response.data
+                users = {u.id: u for u in tweets_response.includes['users']}
+                return tweets, users
+            else:
+                return []
+        except (requests.exceptions.ConnectionError, ProtocolError) as e:
+            print(f"Connection error (attempt {attempt + 1}): {e}")
+            time.sleep(random.uniform(3, 7))  # pause entre 3 et 7 secondes avant de réessayer
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            break
+    return []
+
 
 
 # Function to modify the tweet text before reposting
