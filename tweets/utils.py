@@ -22,7 +22,9 @@ def get_tweets_from_user(username, count=6):
         id=user.data['id'],
         max_results=count,
         expansions=['author_id'],
-        user_fields=['username']
+        user_fields=['username'],
+        tweet_fields=['created_at'],  # Specify created_at to be included in the response
+        exclude='replies', 
     )
 
     if not tweets_response.data:
@@ -57,7 +59,7 @@ def check_existing_tweet(client, modified_text):
         return False
 
 # Function to retweet a modified tweet
-def retweet_with_modifications(tweet):
+def retweet_with_modifications(tweet, users):
     client = tweepy.Client(
         bearer_token=settings.TWITTER_BEARER_TOKEN,
         consumer_key=settings.TWITTER_API_KEY,
@@ -68,7 +70,7 @@ def retweet_with_modifications(tweet):
     )
 
     # Modify the tweet text
-    modified_text = modify_tweet_text(tweet)
+    modified_text = modify_tweet_text(tweet,users)
 
     # Check if the tweet already exists
     if check_existing_tweet(client, modified_text):
