@@ -19,7 +19,7 @@ def process_tweets(request):
             retweet_with_modifications(tweet, users)
 
     # Render a callback page
-    return render(request, 'tweets/success.html', {
+    return render(request, 'twitter/success.html', {
         'message': 'Tweets processed and republished successfully.'
     })
 
