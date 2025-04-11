@@ -1,31 +1,30 @@
 from django.shortcuts import render
-from django.http import JsonResponse
-from .utils import get_tweets_from_user, retweet_with_modifications
 from django.http import HttpResponse
+from .utils import get_tweets_from_user, retweet_with_modifications
 
+# Vue pour traiter les tweets
 def process_tweets(request):
-    usernames = ['VibhorChandel', 'Mindset_FR', 'DivineProverbs']  # List of Twitter usernames
+    usernames = ['VibhorChandel', 'Mindset_FR', 'DivineProverbs']  # Liste des noms d'utilisateur Twitter
+    recent_texts = get_own_recent_tweet_texts()  # Récupère les textes des tweets récents
+
     for username in usernames:
-        # Get the most recent tweets for the username
+        # Récupère les tweets les plus récents pour l'utilisateur
         tweets, users = get_tweets_from_user(username)
         if not tweets:
             continue
         
-        # Sort the tweets by created_at (oldest to newest)
+        # Trie les tweets par date de création (du plus ancien au plus récent)
         sorted_tweets = sorted(tweets, key=lambda t: t.created_at)
 
         for tweet in sorted_tweets[:2]:
-            # Retweet each tweet with modifications
-            retweet_with_modifications(tweet, users)
+            # Retweeter chaque tweet avec des modifications
+            retweet_with_modifications(tweet, users, recent_texts)  # Ajout de recent_texts
 
-    # Render a callback page
+    # Rendre une page de succès après traitement
     return render(request, 'twitter/success.html', {
         'message': 'Tweets processed and republished successfully.'
     })
 
-
-
-
-
+# Vue de callback pour la connexion Twitter
 def twitter_callback(request):
     return HttpResponse("Connexion réussie avec Twitter. Vous pouvez maintenant publier des tweets.")
