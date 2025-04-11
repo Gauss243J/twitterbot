@@ -4,7 +4,7 @@ from .utils import get_tweets_from_user, retweet_with_modifications
 from django.http import HttpResponse
 
 def process_tweets(request):
-    usernames = ['Mindset_FR', 'VibhorChandel', 'DivineProverbs']  # List of Twitter usernames
+    usernames = ['VibhorChandel', 'Mindset_FR', 'DivineProverbs']  # List of Twitter usernames
     for username in usernames:
         # Get the most recent tweets for the username
         tweets, users = get_tweets_from_user(username)
