@@ -7,7 +7,6 @@ from django.conf import settings
 # Function to fetch tweets from a user using Twitter API v2
 def get_tweets_from_user(username, count=6):
     # Set up the tweepy client with Bearer Token for API v2
-
     client = tweepy.Client(
         bearer_token=settings.TWITTER_BEARER_TOKEN,
         wait_on_rate_limit=True  # This enables automatic waiting for rate limits
@@ -29,11 +28,12 @@ def get_tweets_from_user(username, count=6):
     if not tweets_response.data:
         return []
 
-    # Create a dictionary to map author_id to username
+    # Return both tweets and users in a format that supports sorting by created_at
+    tweets = tweets_response.data
     users = {u.id: u for u in tweets_response.includes['users']}
     
-    # Return both tweets and users
-    return tweets_response.data, users
+    return tweets, users
+
 
 # Function to modify the tweet text before reposting
 def modify_tweet_text(tweet, users):
