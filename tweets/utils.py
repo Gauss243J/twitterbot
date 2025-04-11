@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Function to fetch tweets from a user using Twitter API v2
-def get_tweets_from_user(username, count=2, retries=3):
+def get_tweets_from_user(username, count=6, retries=3):
     client = tweepy.Client(
         bearer_token=settings.TWITTER_BEARER_TOKEN,
         wait_on_rate_limit=True
@@ -19,10 +19,10 @@ def get_tweets_from_user(username, count=2, retries=3):
         user = client.get_user(username=username)
     except Exception as e:
         logger.error(f"Error fetching user: {e}")
-        return []
+        return ([], {})  # Retourner un tuple vide
 
     if not user or not user.data:
-        return []
+        return ([], {})
 
     for attempt in range(retries):
         try:
@@ -32,21 +32,22 @@ def get_tweets_from_user(username, count=2, retries=3):
                 expansions=['author_id'],
                 user_fields=['username'],
                 tweet_fields=['created_at'],
-                exclude='replies'
+                exclude='replies',
             )
             if tweets_response.data:
                 tweets = tweets_response.data
                 users = {u.id: u for u in tweets_response.includes['users']}
                 return tweets, users
             else:
-                return []
+                return ([], {})
         except (requests.exceptions.ConnectionError, ProtocolError) as e:
             logger.error(f"Connection error (attempt {attempt + 1}): {e}")
-            time.sleep(random.uniform(3, 7))  # Pause between 3 and 7 seconds before retrying
+            time.sleep(random.uniform(3, 7))
         except Exception as e:
             logger.error(f"Unexpected error: {e}")
             break
-    return []
+    return ([], {})  # Toujours retourner un tuple
+
 
 
 # Function to modify the tweet text before reposting
