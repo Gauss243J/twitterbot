@@ -1,14 +1,13 @@
 import tweepy
 import time
-import requests
-from urllib3.exceptions import ProtocolError
-from django.conf import settings
 import random
 import logging
+from urllib3.exceptions import ProtocolError
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-
+# Fonction pour récupérer les tweets d'un utilisateur
 def get_tweets_from_user(username, count=5, retries=3):
     logger.debug(f"Fetching tweets for user: {username}")
     client = tweepy.Client(
@@ -55,14 +54,14 @@ def get_tweets_from_user(username, count=5, retries=3):
     logger.warning(f"All retries failed for user {username}")
     return ([], {})
 
-
+# Fonction pour modifier le texte d'un tweet
 def modify_tweet_text(tweet, users):
     author = users.get(tweet.author_id)
     modified = f"{tweet.text} @{author.username}" if author else f"{tweet.text} #SourceX"
     logger.debug(f"Modified tweet text: {modified}")
     return modified
 
-
+# Fonction pour récupérer les derniers tweets du compte
 def get_own_recent_tweet_texts():
     logger.debug("Fetching own recent tweets.")
     client = tweepy.Client(
@@ -70,7 +69,7 @@ def get_own_recent_tweet_texts():
         wait_on_rate_limit=True
     )
     try:
-        response = client.get_users_tweets(id=settings.TWITTER_USER_ID, max_results=10)
+        response = client.get_users_tweets(id=settings.TWITTER_USER_ID, max_results=5)
         if response.data:
             texts = [tweet.text for tweet in response.data]
             logger.debug(f"Fetched recent tweet texts: {texts}")
@@ -81,7 +80,7 @@ def get_own_recent_tweet_texts():
         logger.error(f"Error fetching recent tweets: {e}")
     return []
 
-
+# Fonction pour republier les tweets avec des modifications
 def retweet_with_modifications(tweet, users, recent_texts):
     client = tweepy.Client(
         bearer_token=settings.TWITTER_BEARER_TOKEN,
@@ -116,3 +115,4 @@ def retweet_with_modifications(tweet, users, recent_texts):
             logger.error(f"Error posting tweet on retry: {inner_e}")
     except Exception as e:
         logger.error(f"Error posting tweet: {e}")
+
