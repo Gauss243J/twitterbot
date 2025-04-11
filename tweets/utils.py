@@ -1,4 +1,7 @@
 import tweepy
+import time
+import requests
+from urllib3.exceptions import ProtocolError
 from django.conf import settings
 
 # Function to fetch tweets from a user using Twitter API v2
@@ -63,5 +66,13 @@ def retweet_with_modifications(tweet):
     except tweepy.TooManyRequests as e:
         print(f"Rate limit exceeded. Sleeping for {e.retry_after} seconds.")
         time.sleep(e.retry_after)
+    except (requests.exceptions.ConnectionError, ProtocolError) as e:
+        print(f"Connection error encountered: {e}. Sleeping for 30 seconds before retrying...")
+        time.sleep(30)
+        try:
+            client.create_tweet(text=modified_text)
+            print(f"Tweet posted after retry: {modified_text}")
+        except Exception as inner_e:
+            print(f"Error posting tweet on retry: {inner_e}")
     except Exception as e:
         print(f"Error posting tweet: {e}")
