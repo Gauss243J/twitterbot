@@ -68,8 +68,18 @@ def get_own_recent_tweet_texts():
         bearer_token=settings.TWITTER_BEARER_TOKEN,
         wait_on_rate_limit=True
     )
+
+    # Remplace 'username' par le nom d'utilisateur dont tu veux obtenir l'ID
+    username = settings.TWITTER_USER_ID
+    
     try:
-        response = client.get_users_tweets(id=settings.TWITTER_USER_ID, max_results=5)
+        user = client.get_user(username=username)
+        print(f"L'ID de l'utilisateur {username} est : {user.data.id}")
+    except tweepy.TweepyException as e:
+        print(f"Erreur lors de la récupération des informations de l'utilisateur : {e}")
+    
+    try:
+        response = client.get_users_tweets(id=user.data.id, max_results=5)
         if response.data:
             texts = [tweet.text for tweet in response.data]
             logger.debug(f"Fetched recent tweet texts: {texts}")
