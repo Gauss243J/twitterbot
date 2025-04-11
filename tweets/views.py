@@ -16,7 +16,7 @@ def process_tweets(request):
 
         for tweet in tweets:
             # Retweet each tweet with modifications
-            retweet_with_modifications(tweet)
+            retweet_with_modifications(tweet, users)
 
     # Render a callback page
     return render(request, 'tweets/success.html', {
