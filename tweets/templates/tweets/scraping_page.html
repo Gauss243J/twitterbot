@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lancer le Scraping des Tweets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Scraper des Tweets</h1>
+        <p>Vous pouvez déclencher le scraping des tweets en cliquant sur le bouton ci-dessous.</p>
+        <form method="post" action="{% url 'scraping' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn">Lancer le Scraping</button>
+        </form>
+    </div>
+
+</body>
+</html>
 
