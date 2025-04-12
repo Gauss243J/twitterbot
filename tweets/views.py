@@ -4,7 +4,7 @@ from .utils import get_tweets_from_user, retweet_with_modifications, get_own_rec
 
 # Vue pour traiter les tweets
 def process_tweets(request):
-    usernames = ['VibhorChandel', 'Mindset_FR', 'DivineProverbs']  # Liste des noms d'utilisateur Twitter
+    usernames = ['VibhorChandel', 'DivineProverbs']  # Liste des noms d'utilisateur Twitter
     recent_texts = get_own_recent_tweet_texts()  # Récupère les textes des tweets récents
 
     for username in usernames:
